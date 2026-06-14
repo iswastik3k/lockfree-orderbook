@@ -1,13 +1,8 @@
 #include "order_book.hpp"
+#include "memory_reclamation.hpp"
 #include <atomic>
 #include <vector>
 #include <sstream>
-#include <thread>
-#include <shared_mutex>
-
-// Simplified lock-free order book using atomic ring buffer
-// Note: Full production-grade lock-free requires hazard pointers or epoch GC.
-// This is a recruiter-facing demonstration of atomics and CAS.
 
 struct alignas(64) AtomicSlot {
     std::atomic<uint64_t> id{0};
@@ -18,30 +13,35 @@ struct alignas(64) AtomicSlot {
 
 class LockFreeOrderBook : public OrderBook {
 private:
-    static constexpr size_t SIZE = 1024; // ring buffer size
+    static constexpr size_t SIZE = 1024;
     std::vector<AtomicSlot> slots_;
     std::atomic<size_t> write_index_{0};
+    EpochReclamation reclamation_;
 
 public:
     LockFreeOrderBook() : slots_(SIZE) {}
 
     void add_order(const Order& order) override {
+        reclamation_.enter_epoch();
         size_t idx = write_index_.fetch_add(1, std::memory_order_relaxed) % SIZE;
         slots_[idx].id.store(order.id, std::memory_order_release);
         slots_[idx].price.store(order.price, std::memory_order_release);
         slots_[idx].quantity.store(order.quantity, std::memory_order_release);
         slots_[idx].is_buy.store(order.is_buy, std::memory_order_release);
+        reclamation_.leave_epoch();
     }
 
     void remove_order(uint64_t order_id) override {
-        // Lock-free removal is non-trivial; here we mark quantity=0
+        reclamation_.enter_epoch();
         for (auto& slot : slots_) {
             uint64_t id = slot.id.load(std::memory_order_acquire);
             if (id == order_id) {
                 slot.quantity.store(0, std::memory_order_release);
+                reclamation_.retire(reinterpret_cast<void*>(&slot));
                 break;
             }
         }
+        reclamation_.leave_epoch();
     }
 
     std::string snapshot() const override {
@@ -60,6 +60,7 @@ public:
         return oss.str();
     }
 };
+
 
 int main() {
     LockFreeOrderBook book;
