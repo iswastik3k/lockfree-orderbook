@@ -1,0 +1,17 @@
+# Build artifacts
+/build/
+/bin/
+/obj/
+
+# Compiled files
+*.o
+*.out
+*.exe
+
+# Logs
+*.log
+
+# IDE/editor configs
+.vscode/
+.idea/
+*.swp
