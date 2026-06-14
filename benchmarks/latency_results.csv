@@ -1,0 +1,3 @@
+Implementation,AvgLatency(us)
+Mutex,0.0392324
+LockFree,0.01943
