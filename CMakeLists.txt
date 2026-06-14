@@ -1,10 +1,12 @@
-cmake_minimum_required(VERSION 3.16)
-project(LockFreeOrderBook LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.10)
+project(lockfree_orderbook)
 
-set (CMAKE_CXX_STANDARD 20)
-set (CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -march=native -pthread")
 
-# Targets
-add_executable(lock_free_order_book src/lock_free_order_book.cpp src/order_book.hpp)
-add_executable(mutex_order_book src/mutex_order_book.cpp src/order_book.hpp)
-add_executable(benchmark src/benchmark.cpp src/order_book.hpp)
+add_executable(benchmark
+    src/benchmark.cpp
+    src/order_book.hpp
+    src/mutex_order_book.hpp
+    src/lock_free_order_book.hpp
+)
