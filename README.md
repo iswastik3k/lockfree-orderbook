@@ -21,7 +21,7 @@ This comparison highlights the advantages of lock-free concurrency in environmen
 - [x] Phase 03 — Lock-Free Core Implementation
 - [x] Phase 04 — Memory Reclamation Strategy
 - [x] Phase 05 — Benchmarking & Latency Profiling
-- [ ] Phase 06 — Recruiter Polish (Docs, CI/CD, Charts)
+- [x] Phase 06 — Recruiter Polish (Docs, CI/CD, Charts)
 
 ## Goals
 
@@ -35,3 +35,20 @@ This comparison highlights the advantages of lock-free concurrency in environmen
 - `src/lock_free_order_book.cpp` — Lock-free design using atomics.
 - `src/mutex_order_book.cpp` — Baseline design using mutexes.
 - `src/benchmark.cpp` — Benchmarking harness for performance comparison.
+
+## Benchmark Results
+
+| Implementation | Avg Latency (µs) | Throughput (ops/sec)  |
+|----------------|------------------|-----------------------|
+| Mutex          | 0.038544         | 25.9M                 |
+| Lock-Free      | 0.019003         | 52.6M                 |
+
+### Charts
+![Latency Histogram](benchmarks/plots/latency_histogram.png)
+![Throughput Chart](benchmarks/plots/throughput_chart.png)
+![Combined Dual Axis](benchmarks/plots/combined_dual_axis.png)
+
+> Latency and throughput are measured on very different scales.  
+> Latency is in microseconds, throughput in millions of ops/sec.  
+> To visualize both meaningfully, we use separate charts and a dual‑axis plot.  
+> Lock‑free design achieved ~2× lower latency and ~2× higher throughput compared to the mutex baseline.
