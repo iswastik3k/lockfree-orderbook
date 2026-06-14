@@ -113,7 +113,7 @@ python scripts/plot_results.py
 ---
 
 ## System
-- OS: Arch Linux (local dev)
+- OS: Arch Linux
 - CI/CD: Ubuntu runner (GitHub Actions)
 - C++: 20 (optimized with -O3 -march=native -pthread)
 - Python: 3.9+ (for plotting, via requirements.txt)
