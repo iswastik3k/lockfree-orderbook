@@ -1,3 +1,3 @@
 Implementation,AvgLatency(us)
-Mutex,0.0392324
-LockFree,0.01943
+Mutex,0.0385844
+LockFree,0.019003
